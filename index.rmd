@@ -1,0 +1,195 @@
+---
+title: "TP4_infiltracion"
+author: "Josseling Quiroz"
+date: "11/7/2020"
+output:
+  html_document:
+    theme: readable
+    toc: yes
+    toc_float:
+      collapsed: no
+      smooth_scroll: no
+  word_document:
+    toc: yes
+  pdf_document:
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r results='hide', warning = FALSE, message=FALSE}
+library(tidyverse)
+library(plotly)
+library(knitr)
+
+```
+
+# Universidad de Costa Rica
+
+## GF-0607: Hidroclimatología
+#### Profesores: Sebastian Granados/Christian Birkel
+
+## Descripción general
+TP4 Infiltración 
+Ejercicio de infiltración usando la ecuación de Horton (1930): f = fc + (f0 - fc) e-kt
+
+1. Deriva una curva de la capacidad de infiltración en mm/h versus el tiempo en horas y grafiquelo para un k = 0.1, 0.2, 0.3, 0.5, 0.7 y 0.9. Grafique las curvas en un mismo grafico y describe las curvas caracteristicas.
+
+2. Después de cuanto tiempo se alcanza la infiltracion final de 5mm/h a 2 decimales?
+
+3. Cual es la cantidad total del agua infiltrada desde el inicio hasta las 10horas del experimento? 
+
+# Constantes(Infiltracion inicial(mm/h), Infiltracion final(mm/h), constante de tiempo(h))
+```{r results='hide', warning = FALSE, message=FALSE}
+
+f0 <- 129
+fc <- 5
+k <- 0.4
+
+#variables de k
+
+k1 <- 0.1
+k2 <- 0.2
+k3 <- 0.3
+k5 <- 0.5
+k7 <- 0.7
+k9 <- 0.9
+```
+# Tiempo de infiltración (horas)
+```{r results='hide', warning = FALSE, message=FALSE}
+Tiempo <- sort(c(1:30, seq(0,0.5, by=0.1), 1.5))
+
+tabla <- data.frame(Tiempo, infil=NA)
+
+```
+# Ecuación de Horton
+```{r results='hide', warning = FALSE, message=FALSE}
+
+FunInfil <- function(f0,fc,k,t) {
+   infiltration <- fc+(f0-fc)*exp(-k*t)
+   return(infiltration)
+}
+
+FunInfil(129,5,0.4, Tiempo)
+
+datos <- tabla %>% mutate(Infiltracion=FunInfil(129,5,0.4, Tiempo))
+
+# 0.1
+
+FunInfiluno <- function(f0,fc,k1,t) {
+   infiltration1 <- fc+(f0-fc)*exp(-k1*t)
+   return(infiltration1)
+}
+FunInfiluno(129,5,0.1, Tiempo)
+
+datos <- tabla %>% mutate(Infiltracion1=FunInfiluno(129,5,0.1, Tiempo))
+
+# 0.2
+FunInfildos <- function(f0,fc,k2,t) {
+   infiltration2 <- fc+(f0-fc)*exp(-k2*t)
+   return(infiltration2)
+}
+FunInfildos(129,5,0.2, Tiempo)
+
+# 0.3
+FunInfiltres <- function(f0,fc,k3,t) {
+   infiltration3 <- fc+(f0-fc)*exp(-k3*t)
+   return(infiltration3)
+}
+FunInfiltres(129,5,0.3, Tiempo)
+
+# 0.5
+FunInfilcinco <- function(f0,fc,k5,t) {
+   infiltration5 <- fc+(f0-fc)*exp(-k5*t)
+   return(infiltration5)
+}
+FunInfilcinco(129,5,0.5, Tiempo)
+
+# 0.7
+FunInfilsiete <- function(f0,fc,k7,t) {
+   infiltration7 <- fc+(f0-fc)*exp(-k7*t)
+   return(infiltration7)
+}
+FunInfilsiete(129,5,0.7, Tiempo)
+
+# 0.9
+FunInfilnueve <- function(f0,fc,k9,t) {
+   infiltration9 <- fc+(f0-fc)*exp(-k9*t)
+   return(infiltration9)
+}
+FunInfilnueve(129,5,0.9, Tiempo)
+```
+
+#Color de lineas
+```{r results='hide', warning = FALSE, message=FALSE}
+color_0.1 <- 'blue'
+color_0.2 <- 'red'
+color_0.3 <- 'green'
+color_0.5 <- 'purple'
+color_0.7 <- 'grey'
+color_0.9 <- 'orange'
+color_0.4 <- 'brown'
+```
+
+# Gráfica
+```{r results='hide', warning = FALSE, message=FALSE}
+
+gr <- plot_ly(data = datos,
+                x = ~ Tiempo,
+                y = ~ FunInfil(129,5,0.4, Tiempo), 
+                name = 'k 0.4', 
+                type = 'scatter',
+                mode = 'lines',
+                line = list(color = color_0.4)) %>%
+  config(locale = "es") %>%
+  add_trace(y = ~ FunInfiluno(129,5,0.1, Tiempo),
+                    name = 'k 0.1',
+                    mode = 'lines',
+                    line = list(color = color_0.1)) %>%
+  add_trace(y = ~ FunInfildos(129,5,0.2, Tiempo),
+                    name = 'k 0.2',
+                    mode = 'lines',
+                    line = list(color = color_0.2)) %>%
+  add_trace(y = ~ FunInfiltres(129,5,0.3, Tiempo),
+                    name = 'k 0.3',
+                    mode = 'lines',
+                    line = list(color = color_0.3)) %>%  
+  add_trace(y = ~ FunInfilcinco(129,5,0.5, Tiempo),
+                    name = 'k 0.5',
+                    mode = 'lines',
+                    line = list(color = color_0.5)) %>%  
+  add_trace(y = ~ FunInfilsiete(129,5,0.7, Tiempo),
+                    name = 'k 0.7',
+                    mode = 'lines',
+                    line = list(color = color_0.7)) %>%  
+  add_trace(y = ~ FunInfilnueve(129,5,0.9, Tiempo),
+                    name = 'k 0.9',
+                    mode = 'lines',
+                    line = list(color = color_0.9)) %>%  
+  layout(title = "Gráfica",
+                 yaxis = list(title = "Infiltración"),
+                 xaxis = list(title = "Tiempo(horas)"),
+                 legend = list(x = 25, y = 0.9),
+                 hovermode = "compare")
+```
+
+# Despliegue del grafico interactivo
+```{r echo=FALSE,warning = FALSE, message=FALSE}
+gr
+```
+
+# Descripción curvas:
+
+Se puede apreciar que las curvas de infiltración van decreciendo a medida que aumenta el tiempo. Así mismo también existe una relación entre el valor de "k" y el tamaño de la curva, es decir, mientras más bajo sea el valor de "k" más alta es la curva, esto se puede observar al comparar la curva de k=0.1 y k=0.9.
+
+
+## Después de cuanto tiempo se alcanza la infiltracion final de 5mm/h a 2 decimales?
+
+Se alcanza después de las 24 horas.
+
+## Cual es la cantidad total del agua infiltrada desde el inicio hasta las 10horas del experimento?
+
+La cantidad de agua infiltrada en "k 0.4" despues de las 10 horas es de 7,27 mm/h.
